@@ -11,6 +11,14 @@ export function useSessionCount() {
   return useRealtimeStore((state) => Object.keys(state.sessions).length);
 }
 
+export function useRealtimeSessionMap() {
+  return useRealtimeStore((state) => state.sessions);
+}
+
+export function useReconnectAttempts() {
+  return useRealtimeStore((state) => state.reconnectAttempts);
+}
+
 export function useSelectedSessionKey() {
   return useUiStore((state) => state.selectedSessionKey);
 }
