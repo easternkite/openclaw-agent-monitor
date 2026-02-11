@@ -23,6 +23,7 @@ type RealtimeActions = {
   incrementReconnectAttempts: () => void;
   resetReconnectAttempts: () => void;
   applySessionPatch: (patch: RealtimeSessionPatch) => void;
+  reconcileSessionsSnapshot: (patches: RealtimeSessionPatch[]) => void;
   removeSession: (sessionKey: string) => void;
 };
 
@@ -46,6 +47,11 @@ export const useRealtimeStore = create<RealtimeStore>((set) => ({
           ...patch,
         },
       },
+      lastEventAt: new Date().toISOString(),
+    })),
+  reconcileSessionsSnapshot: (patches) =>
+    set(() => ({
+      sessions: Object.fromEntries(patches.map((patch) => [patch.key, patch])),
       lastEventAt: new Date().toISOString(),
     })),
   removeSession: (sessionKey) =>
