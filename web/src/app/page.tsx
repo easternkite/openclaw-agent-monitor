@@ -2,6 +2,8 @@
 
 import { Suspense } from "react";
 
+import { ErrorNotice } from "@/components/feedback/error-notice";
+import { ErrorToast } from "@/components/feedback/error-toast";
 import { AppShell } from "@/components/layout/app-shell";
 import { ConnectionBanner } from "@/components/layout/connection-banner";
 import { ErrorBoundaryPanel } from "@/components/layout/error-boundary-panel";
@@ -16,7 +18,7 @@ import { useConnectionStatus, useReconnectAttempts, useSessionCount } from "@/st
 import { useUiStore } from "@/stores/ui-store";
 
 export default function Home() {
-  const { sessions, isInitialLoading, isRevalidating, error } = useSessionsQuery();
+  const { sessions, isInitialLoading, isRevalidating, error, refetch } = useSessionsQuery();
   const realtime = useRealtimeSync();
 
   const connectionStatus = useConnectionStatus();
@@ -31,7 +33,8 @@ export default function Home() {
   const channelOptions = [...new Set(sessions.map((session) => session.channel).filter(Boolean) as string[])].sort();
 
   return (
-    <AppShell
+    <>
+      <AppShell
       header={
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -50,7 +53,18 @@ export default function Home() {
           onRetryNow={realtime.retryNow}
         />
       }
-      errorBoundary={<ErrorBoundaryPanel message={error?.message ?? null} />}
+      errorBoundary={
+        connectionStatus === "disconnected" ? (
+          <ErrorNotice
+            level="banner"
+            message="Gateway 연결이 끊어졌습니다. 네트워크 상태를 확인하고 재시도하세요."
+            onRetry={realtime.retryNow}
+            onRefresh={() => window.location.reload()}
+          />
+        ) : (
+          <ErrorBoundaryPanel message={error?.message ?? null} />
+        )
+      }
       main={
         <div className="space-y-4">
           <Suspense fallback={<div className="h-10 rounded-lg border border-border bg-surface-muted" />}>
@@ -65,6 +79,16 @@ export default function Home() {
           <div className="space-y-2 text-sm">
             {isInitialLoading ? <p>초기 스냅샷 로딩 중...</p> : null}
             {isRevalidating ? <p>스냅샷 재검증 중...</p> : null}
+            {error ? (
+              <ErrorNotice
+                level="inline"
+                message={error.message}
+                onRetry={() => {
+                  void refetch();
+                }}
+                onRefresh={() => window.location.reload()}
+              />
+            ) : null}
             {!isInitialLoading && !isRevalidating && !error ? <p>실시간 동기화 정상 동작 중</p> : null}
           </div>
         </div>
@@ -82,6 +106,8 @@ export default function Home() {
           <SessionDetailPanel />
         </div>
       }
-    />
+      />
+      <ErrorToast message={error?.message ?? null} />
+    </>
   );
 }
