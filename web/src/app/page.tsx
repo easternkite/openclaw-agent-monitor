@@ -17,7 +17,7 @@ import { useUiStore } from "@/stores/ui-store";
 
 export default function Home() {
   const { sessions, isInitialLoading, isRevalidating, error } = useSessionsQuery();
-  useRealtimeSync();
+  const realtime = useRealtimeSync();
 
   const connectionStatus = useConnectionStatus();
   const sessionCount = useSessionCount();
@@ -42,7 +42,13 @@ export default function Home() {
         </div>
       }
       connectionBanner={
-        <ConnectionBanner status={connectionStatus} reconnectAttempts={reconnectAttempts} />
+        <ConnectionBanner
+          status={connectionStatus}
+          reconnectAttempts={reconnectAttempts}
+          abnormalClosureDetected={realtime.abnormalClosureDetected}
+          lastCloseCode={realtime.lastCloseCode}
+          onRetryNow={realtime.retryNow}
+        />
       }
       errorBoundary={<ErrorBoundaryPanel message={error?.message ?? null} />}
       main={
