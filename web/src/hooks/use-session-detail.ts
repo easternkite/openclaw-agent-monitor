@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import { ApiRequestError } from "@/lib/api-error";
 import { queryKeys } from "@/lib/query-keys";
 import type { SessionHistoryPage, SessionStatus } from "@/types";
 
@@ -20,7 +21,9 @@ async function fetchSessionStatus(sessionKey: string): Promise<SessionStatus> {
   };
 
   if (!response.ok) {
-    throw new Error(payload.error?.message ?? "Failed to fetch session status");
+    throw new ApiRequestError(payload.error?.message ?? "Failed to fetch session status", {
+      status: response.status,
+    });
   }
 
   if (!payload.status) {
@@ -41,7 +44,9 @@ async function fetchSessionHistory(sessionKey: string): Promise<SessionHistoryPa
   };
 
   if (!response.ok) {
-    throw new Error(payload.error?.message ?? "Failed to fetch session history");
+    throw new ApiRequestError(payload.error?.message ?? "Failed to fetch session history", {
+      status: response.status,
+    });
   }
 
   return payload;
@@ -52,6 +57,13 @@ export function useSessionDetail(sessionKey: string | null) {
     queryKey: sessionKey ? queryKeys.sessions.status(sessionKey) : [...queryKeys.sessions.all, "status", "idle"],
     queryFn: () => fetchSessionStatus(sessionKey as string),
     enabled: Boolean(sessionKey),
+    retry: (failureCount, error) => {
+      if (error instanceof ApiRequestError && error.status && error.status >= 400 && error.status < 500) {
+        return false;
+      }
+
+      return failureCount < 2;
+    },
   });
 
   const historyQuery = useQuery({
@@ -60,6 +72,13 @@ export function useSessionDetail(sessionKey: string | null) {
       : [...queryKeys.sessions.all, "history", "idle"],
     queryFn: () => fetchSessionHistory(sessionKey as string),
     enabled: Boolean(sessionKey),
+    retry: (failureCount, error) => {
+      if (error instanceof ApiRequestError && error.status && error.status >= 400 && error.status < 500) {
+        return false;
+      }
+
+      return failureCount < 1;
+    },
   });
 
   return {

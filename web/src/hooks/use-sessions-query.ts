@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
+import { ApiRequestError } from "@/lib/api-error";
 import { queryKeys } from "@/lib/query-keys";
 import { useRealtimeStore } from "@/stores/realtime-store";
 import type { SessionSummary } from "@/types";
@@ -24,7 +25,9 @@ async function fetchSessionsSnapshot(): Promise<SessionSummary[]> {
   };
 
   if (!response.ok) {
-    throw new Error(payload.error?.message ?? "Failed to fetch sessions snapshot");
+    throw new ApiRequestError(payload.error?.message ?? "Failed to fetch sessions snapshot", {
+      status: response.status,
+    });
   }
 
   return payload.sessions ?? [];
@@ -36,6 +39,13 @@ export function useSessionsQuery() {
   const query = useQuery({
     queryKey: queryKeys.sessions.list(),
     queryFn: fetchSessionsSnapshot,
+    retry: (failureCount, error) => {
+      if (error instanceof ApiRequestError && error.status && error.status >= 400 && error.status < 500) {
+        return false;
+      }
+
+      return failureCount < 3;
+    },
     refetchInterval: RECONCILE_INTERVAL_MS,
     refetchIntervalInBackground: true,
   });
