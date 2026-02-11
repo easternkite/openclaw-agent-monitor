@@ -23,6 +23,8 @@ export default function Home() {
   const sessionCount = useSessionCount();
   const reconnectAttempts = useReconnectAttempts();
   const filter = useUiStore((state) => state.filter);
+  const selectedSessionKey = useUiStore((state) => state.selectedSessionKey);
+  const selectSession = useUiStore((state) => state.selectSession);
 
   const filteredSessions = filterSessions(sessions, filter);
   const agentOptions = [...new Set(sessions.map((session) => session.agentName))].sort();
@@ -48,7 +50,11 @@ export default function Home() {
           <Suspense fallback={<div className="h-10 rounded-lg border border-border bg-surface-muted" />}>
             <SessionFilters agentOptions={agentOptions} channelOptions={channelOptions} />
           </Suspense>
-          <AgentOverviewGrid sessions={filteredSessions} />
+          <AgentOverviewGrid
+            sessions={filteredSessions}
+            selectedSessionKey={selectedSessionKey}
+            onSelectSession={selectSession}
+          />
           <SessionTable sessions={filteredSessions} />
           <div className="space-y-2 text-sm">
             {isInitialLoading ? <p>초기 스냅샷 로딩 중...</p> : null}

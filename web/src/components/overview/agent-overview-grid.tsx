@@ -4,6 +4,8 @@ import type { SessionLifecycleStatus, SessionSummary } from "@/types";
 
 type AgentOverviewGridProps = {
   sessions: SessionSummary[];
+  selectedSessionKey: string | null;
+  onSelectSession: (sessionKey: string) => void;
 };
 
 const AGENT_SLOTS = ["main", "agent-1", "agent-2", "agent-3", "agent-4"] as const;
@@ -20,7 +22,11 @@ function pickLatestSession(sessions: SessionSummary[], agentName: string) {
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0];
 }
 
-export function AgentOverviewGrid({ sessions }: AgentOverviewGridProps) {
+export function AgentOverviewGrid({
+  sessions,
+  selectedSessionKey,
+  onSelectSession,
+}: AgentOverviewGridProps) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
       {AGENT_SLOTS.map((agentName) => {
@@ -37,8 +43,19 @@ export function AgentOverviewGrid({ sessions }: AgentOverviewGridProps) {
 
         const card = mapSessionToCard(latest);
 
+        const selected = selectedSessionKey === latest.key;
+
         return (
-          <article key={agentName} className="rounded-lg border border-border bg-background p-3">
+          <button
+            key={agentName}
+            type="button"
+            onClick={() => onSelectSession(latest.key)}
+            className={`rounded-lg border bg-background p-3 text-left transition-all duration-200 ${
+              selected
+                ? "border-status-active/60 ring-2 ring-status-active/30"
+                : "border-border hover:border-status-idle/50"
+            } ${card.status === "stale" ? "animate-pulse" : ""}`}
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-medium">{agentName}</p>
               <RealtimeBadge status={toRealtimeBadgeStatus(card.status)} />
@@ -47,7 +64,7 @@ export function AgentOverviewGrid({ sessions }: AgentOverviewGridProps) {
             <p className="mt-1 text-xs text-muted-foreground">
               {card.updatedAgoLabel} · 토큰 {card.totalTokensLabel}
             </p>
-          </article>
+          </button>
         );
       })}
     </div>
