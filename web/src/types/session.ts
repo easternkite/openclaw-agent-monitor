@@ -31,7 +31,7 @@ export type HistoryItem = {
   role: HistoryRole;
   text: string;
   createdAt: string;
-  toolName?: string;
+  toolName?: string | undefined;
 };
 
 export type SessionHistoryPage = {
