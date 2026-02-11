@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { ConnectionBanner } from "@/components/layout/connection-banner";
 import { ErrorBoundaryPanel } from "@/components/layout/error-boundary-panel";
 import { AgentOverviewGrid } from "@/components/overview/agent-overview-grid";
+import { SessionTable } from "@/components/session/session-table";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { useSessionsQuery } from "@/hooks/use-sessions-query";
 import { useConnectionStatus, useReconnectAttempts, useSessionCount } from "@/stores/selectors";
@@ -34,6 +35,7 @@ export default function Home() {
       main={
         <div className="space-y-4">
           <AgentOverviewGrid sessions={sessions} />
+          <SessionTable sessions={sessions} />
           <div className="space-y-2 text-sm">
             {isInitialLoading ? <p>초기 스냅샷 로딩 중...</p> : null}
             {isRevalidating ? <p>스냅샷 재검증 중...</p> : null}
