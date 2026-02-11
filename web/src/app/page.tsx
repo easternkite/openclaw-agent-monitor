@@ -3,12 +3,13 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ConnectionBanner } from "@/components/layout/connection-banner";
 import { ErrorBoundaryPanel } from "@/components/layout/error-boundary-panel";
+import { AgentOverviewGrid } from "@/components/overview/agent-overview-grid";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { useSessionsQuery } from "@/hooks/use-sessions-query";
 import { useConnectionStatus, useReconnectAttempts, useSessionCount } from "@/stores/selectors";
 
 export default function Home() {
-  const { isInitialLoading, isRevalidating, error } = useSessionsQuery();
+  const { sessions, isInitialLoading, isRevalidating, error } = useSessionsQuery();
   useRealtimeSync();
 
   const connectionStatus = useConnectionStatus();
@@ -31,10 +32,13 @@ export default function Home() {
       }
       errorBoundary={<ErrorBoundaryPanel message={error?.message ?? null} />}
       main={
-        <div className="space-y-2 text-sm">
-          {isInitialLoading ? <p>초기 스냅샷 로딩 중...</p> : null}
-          {isRevalidating ? <p>스냅샷 재검증 중...</p> : null}
-          {!isInitialLoading && !isRevalidating && !error ? <p>실시간 동기화 정상 동작 중</p> : null}
+        <div className="space-y-4">
+          <AgentOverviewGrid sessions={sessions} />
+          <div className="space-y-2 text-sm">
+            {isInitialLoading ? <p>초기 스냅샷 로딩 중...</p> : null}
+            {isRevalidating ? <p>스냅샷 재검증 중...</p> : null}
+            {!isInitialLoading && !isRevalidating && !error ? <p>실시간 동기화 정상 동작 중</p> : null}
+          </div>
         </div>
       }
       side={
