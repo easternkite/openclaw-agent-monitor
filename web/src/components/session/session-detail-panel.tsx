@@ -1,6 +1,7 @@
 "use client";
 
 import { useSessionDetail } from "@/hooks/use-session-detail";
+import { ApiRequestError } from "@/lib/api-error";
 import { useUiStore } from "@/stores/ui-store";
 
 export function SessionDetailPanel() {
@@ -16,7 +17,8 @@ export function SessionDetailPanel() {
   }
 
   if (error) {
-    return <p className="text-sm text-status-disconnected">상세 조회 오류: {error.message}</p>;
+    const userMessage = error instanceof ApiRequestError ? error.userMessage : error.message;
+    return <p className="text-sm text-status-disconnected">상세 조회 오류: {userMessage}</p>;
   }
 
   return (
