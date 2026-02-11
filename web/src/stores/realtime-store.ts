@@ -5,8 +5,10 @@ export type ConnectionStatus = "connected" | "reconnecting" | "disconnected";
 export type RealtimeSessionPatch = {
   key: string;
   updatedAt: string;
-  channel?: string;
+  channel?: string | null;
   agentName?: string;
+  lastMessageAt?: string;
+  lastRole?: "user" | "assistant" | "tool";
 };
 
 type RealtimeState = {
