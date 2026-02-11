@@ -21,6 +21,8 @@ type GatewaySocketState = {
   reconnecting: boolean;
   reconnectAttempts: number;
   disconnected: boolean;
+  abnormalClosureDetected: boolean;
+  lastCloseCode: number | null;
   lastMessageAt: string | null;
   connect: () => void;
   disconnect: () => void;
@@ -66,6 +68,8 @@ export function useGatewaySocket(options: GatewaySocketOptions = {}): GatewaySoc
   const [reconnecting, setReconnecting] = useState(false);
   const [disconnected, setDisconnected] = useState(false);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [abnormalClosureDetected, setAbnormalClosureDetected] = useState(false);
+  const [lastCloseCode, setLastCloseCode] = useState<number | null>(null);
   const [lastMessageAt, setLastMessageAt] = useState<string | null>(null);
 
   const clearReconnectTimer = useCallback(() => {
@@ -90,6 +94,8 @@ export function useGatewaySocket(options: GatewaySocketOptions = {}): GatewaySoc
       setReconnecting(false);
       setDisconnected(false);
       setReconnectAttempts(0);
+      setAbnormalClosureDetected(false);
+      setLastCloseCode(null);
       onOpen?.();
     };
 
@@ -115,6 +121,8 @@ export function useGatewaySocket(options: GatewaySocketOptions = {}): GatewaySoc
       socketRef.current = null;
       setConnected(false);
       setConnecting(false);
+      setLastCloseCode(event.code);
+      setAbnormalClosureDetected(!event.wasClean && event.code !== 1000);
       onClose?.(event);
 
       if (!autoReconnect || manuallyClosedRef.current) {
@@ -173,6 +181,8 @@ export function useGatewaySocket(options: GatewaySocketOptions = {}): GatewaySoc
     setDisconnected(false);
     setReconnecting(false);
     setReconnectAttempts(0);
+    setAbnormalClosureDetected(false);
+    setLastCloseCode(null);
     clearReconnectTimer();
     connect();
   }, [clearReconnectTimer, connect]);
@@ -197,6 +207,8 @@ export function useGatewaySocket(options: GatewaySocketOptions = {}): GatewaySoc
     reconnecting,
     reconnectAttempts,
     disconnected,
+    abnormalClosureDetected,
+    lastCloseCode,
     lastMessageAt,
     connect,
     disconnect,
