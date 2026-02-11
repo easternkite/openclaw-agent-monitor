@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { ConnectionBanner } from "@/components/layout/connection-banner";
 import { ErrorBoundaryPanel } from "@/components/layout/error-boundary-panel";
 import { AgentOverviewGrid } from "@/components/overview/agent-overview-grid";
+import { SessionDetailPanel } from "@/components/session/session-detail-panel";
 import { SessionFilters } from "@/components/session/session-filters";
 import { SessionTable } from "@/components/session/session-table";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
@@ -57,13 +58,16 @@ export default function Home() {
         </div>
       }
       side={
-        <div className="space-y-2 text-sm">
-          <p className="text-muted-foreground">상태 요약</p>
-          <ul className="space-y-1">
-            <li>연결 상태: {connectionStatus}</li>
-            <li>재연결 시도: {reconnectAttempts}</li>
-            <li>로딩: {isInitialLoading ? "yes" : "no"}</li>
-          </ul>
+        <div className="space-y-4">
+          <div className="space-y-2 text-sm">
+            <p className="text-muted-foreground">상태 요약</p>
+            <ul className="space-y-1">
+              <li>연결 상태: {connectionStatus}</li>
+              <li>재연결 시도: {reconnectAttempts}</li>
+              <li>로딩: {isInitialLoading ? "yes" : "no"}</li>
+            </ul>
+          </div>
+          <SessionDetailPanel />
         </div>
       }
     />
