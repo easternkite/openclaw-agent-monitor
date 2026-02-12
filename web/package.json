@@ -11,6 +11,9 @@
     "test": "vitest run",
     "test:ci": "vitest run --reporter=verbose",
     "verify": "npm run lint && npm run typecheck && npm run test:ci && npm run build",
+    "deploy:build": "./scripts/build-prod.sh",
+    "deploy:start": "./scripts/start-prod.sh",
+    "healthcheck": "./scripts/healthcheck.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
