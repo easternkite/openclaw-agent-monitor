@@ -13,7 +13,7 @@ import { SessionFilters } from "@/components/session/session-filters";
 import { SessionTable } from "@/components/session/session-table";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { useSessionsQuery } from "@/hooks/use-sessions-query";
-import { filterSessions } from "@/lib/session-state-utils";
+import { filterSessions, parseAgentNameFromKey } from "@/lib/session-state-utils";
 import { useConnectionStatus, useReconnectAttempts, useSessionCount } from "@/stores/selectors";
 import { useUiStore } from "@/stores/ui-store";
 
@@ -29,7 +29,13 @@ export default function Home() {
   const selectSession = useUiStore((state) => state.selectSession);
 
   const filteredSessions = filterSessions(sessions, filter);
-  const agentOptions = [...new Set(sessions.map((session) => session.agentName))].sort();
+  const agentOptions = [
+    ...new Set(
+      sessions.map((session) =>
+        session.agentName.trim().length > 0 ? session.agentName : parseAgentNameFromKey(session.key),
+      ),
+    ),
+  ].sort();
   const channelOptions = [...new Set(sessions.map((session) => session.channel).filter(Boolean) as string[])].sort();
 
   return (
