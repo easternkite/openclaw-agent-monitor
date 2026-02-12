@@ -13,4 +13,10 @@ OpenClaw Monitor web app 검증 파이프라인:
 npm run verify
 ```
 
+보안 점검(프로덕션 의존성만, high 이상 실패):
+
+```bash
+npm run audit:prod
+```
+
 CI/로컬 모두 동일한 기준으로 사용한다.
