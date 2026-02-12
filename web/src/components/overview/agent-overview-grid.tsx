@@ -8,7 +8,12 @@ type AgentOverviewGridProps = {
   onSelectSession: (sessionKey: string) => void;
 };
 
-const AGENT_SLOTS = ["main", "agent-1", "agent-2", "agent-3", "agent-4"] as const;
+const STATUS_PRIORITY: Record<SessionLifecycleStatus, number> = {
+  active: 0,
+  idle: 1,
+  stale: 2,
+  disconnected: 3,
+};
 
 function toRealtimeBadgeStatus(status: SessionLifecycleStatus): "connected" | "reconnecting" | "disconnected" {
   if (status === "active") return "connected";
@@ -16,10 +21,42 @@ function toRealtimeBadgeStatus(status: SessionLifecycleStatus): "connected" | "r
   return "disconnected";
 }
 
-function pickLatestSession(sessions: SessionSummary[], agentName: string) {
-  return sessions
-    .filter((session) => session.agentName === agentName)
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0];
+function resolveAgentName(session: SessionSummary): string {
+  if (session.agentName.trim().length > 0) {
+    return session.agentName;
+  }
+
+  return session.key.split(":")[0] ?? session.key;
+}
+
+function buildDynamicAgentCards(sessions: SessionSummary[]): SessionSummary[] {
+  const latestByAgent = new Map<string, SessionSummary>();
+
+  for (const session of sessions) {
+    const agentName = resolveAgentName(session);
+    const existing = latestByAgent.get(agentName);
+
+    if (!existing) {
+      latestByAgent.set(agentName, { ...session, agentName });
+      continue;
+    }
+
+    const currentTime = new Date(session.updatedAt).getTime();
+    const existingTime = new Date(existing.updatedAt).getTime();
+
+    if (currentTime > existingTime) {
+      latestByAgent.set(agentName, { ...session, agentName });
+    }
+  }
+
+  return [...latestByAgent.values()].sort((a, b) => {
+    const priorityDiff = STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status];
+    if (priorityDiff !== 0) {
+      return priorityDiff;
+    }
+
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  });
 }
 
 export function AgentOverviewGrid({
@@ -27,29 +64,27 @@ export function AgentOverviewGrid({
   selectedSessionKey,
   onSelectSession,
 }: AgentOverviewGridProps) {
+  const cards = buildDynamicAgentCards(sessions);
+
+  if (cards.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
+        표시할 에이전트 세션이 없습니다.
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
-      {AGENT_SLOTS.map((agentName) => {
-        const latest = pickLatestSession(sessions, agentName);
-
-        if (!latest) {
-          return (
-            <article key={agentName} className="rounded-lg border border-border bg-background p-3">
-              <p className="text-sm font-medium">{agentName}</p>
-              <p className="mt-2 text-xs text-muted-foreground">활성 세션 없음</p>
-            </article>
-          );
-        }
-
-        const card = mapSessionToCard(latest);
-
-        const selected = selectedSessionKey === latest.key;
+      {cards.map((session) => {
+        const card = mapSessionToCard(session);
+        const selected = selectedSessionKey === session.key;
 
         return (
           <button
-            key={agentName}
+            key={session.agentName}
             type="button"
-            onClick={() => onSelectSession(latest.key)}
+            onClick={() => onSelectSession(session.key)}
             className={`rounded-lg border bg-background p-3 text-left transition-all duration-200 ${
               selected
                 ? "border-status-active/60 ring-2 ring-status-active/30"
@@ -57,7 +92,7 @@ export function AgentOverviewGrid({
             } ${card.status === "stale" ? "animate-pulse" : ""}`}
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-medium">{agentName}</p>
+              <p className="text-sm font-medium">{session.agentName}</p>
               <RealtimeBadge status={toRealtimeBadgeStatus(card.status)} />
             </div>
             <p className="mt-2 truncate text-sm">{card.title}</p>
