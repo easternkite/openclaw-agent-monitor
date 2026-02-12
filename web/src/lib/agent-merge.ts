@@ -2,6 +2,7 @@ import { parseAgentNameFromKey } from "@/lib/session-state-utils";
 import type { AgentDescriptor, AgentLifecycleStatus, SessionSummary } from "@/types";
 
 export type MergedAgentCard = {
+  agentKey: string;
   agentName: string;
   state: AgentLifecycleStatus;
   sourceTag: "session" | "registry" | "hybrid";
@@ -54,6 +55,7 @@ export function mergeAgentCards(
 
   for (const session of latestSessions.values()) {
     merged.set(session.agentName, {
+      agentKey: session.agentName,
       agentName: session.agentName,
       state: session.status,
       sourceTag: "session",
@@ -67,6 +69,7 @@ export function mergeAgentCards(
 
     if (!existing) {
       merged.set(agent.agentKey, {
+        agentKey: agent.agentKey,
         agentName: agent.displayName || agent.agentKey,
         state: "idle(no-session)",
         sourceTag: "registry",
