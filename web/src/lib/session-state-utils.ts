@@ -81,18 +81,42 @@ export type SessionFilter = {
 
 export function filterSessions(sessions: SessionSummary[], filter: SessionFilter): SessionSummary[] {
   const normalizedQuery = filter.query?.trim().toLowerCase() ?? "";
+  const queryTokens = normalizedQuery ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
+
+  const scopedFilters = {
+    channel: queryTokens
+      .filter((token) => token.startsWith("channel:"))
+      .map((token) => token.slice("channel:".length))
+      .filter(Boolean),
+    to: queryTokens
+      .filter((token) => token.startsWith("to:") || token.startsWith("recipient:"))
+      .map((token) => (token.startsWith("to:") ? token.slice("to:".length) : token.slice("recipient:".length)))
+      .filter(Boolean),
+  };
+
+  const freeTextTokens = queryTokens.filter(
+    (token) => !token.startsWith("channel:") && !token.startsWith("to:") && !token.startsWith("recipient:"),
+  );
 
   return sessions.filter((session) => {
     if (filter.agent && session.agentName !== filter.agent) return false;
     if (filter.channel && session.channel !== filter.channel) return false;
 
-    if (!normalizedQuery) return true;
+    if (scopedFilters.channel.length > 0) {
+      const normalizedChannel = (session.channel ?? "").toLowerCase();
+      if (!scopedFilters.channel.every((token) => normalizedChannel.includes(token))) return false;
+    }
 
-    const haystacks = [session.displayName, session.lastTo ?? "", session.key]
-      .join(" ")
-      .toLowerCase();
+    if (scopedFilters.to.length > 0) {
+      const normalizedRecipient = (session.lastTo ?? "").toLowerCase();
+      if (!scopedFilters.to.every((token) => normalizedRecipient.includes(token))) return false;
+    }
 
-    return haystacks.includes(normalizedQuery);
+    if (freeTextTokens.length === 0) return true;
+
+    const haystacks = [session.displayName, session.lastTo ?? "", session.key].join(" ").toLowerCase();
+
+    return freeTextTokens.every((token) => haystacks.includes(token));
   });
 }
 
