@@ -37,7 +37,7 @@ export function AgentOverviewGrid({
       {cards.map((item) => {
         if (!item.session) {
           return (
-            <article key={item.agentName} className="rounded-lg border border-border bg-background p-3">
+            <article key={`registry-${item.agentKey}`} className="rounded-lg border border-border bg-background p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-medium">{item.agentName}</p>
                 <RealtimeBadge status={toRealtimeBadgeStatus(item.state)} />
@@ -53,7 +53,7 @@ export function AgentOverviewGrid({
 
         return (
           <button
-            key={item.agentName}
+            key={`session-${item.agentKey}`}
             type="button"
             onClick={() => onSelectSession(session.key)}
             className={`rounded-lg border bg-background p-3 text-left transition-all duration-200 ${
