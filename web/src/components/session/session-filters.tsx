@@ -46,6 +46,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
   return (
     <div className="grid grid-cols-1 gap-2 rounded-lg border border-border bg-surface-muted p-3 md:grid-cols-3">
       <select
+        aria-label="에이전트 필터"
         className="rounded-md border border-border bg-background px-2 py-1 text-sm"
         value={filter.agent ?? ""}
         onChange={(event) => setAgentFilter(event.target.value || null)}
@@ -59,6 +60,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
       </select>
 
       <select
+        aria-label="채널 필터"
         className="rounded-md border border-border bg-background px-2 py-1 text-sm"
         value={filter.channel ?? ""}
         onChange={(event) => setChannelFilter(event.target.value || null)}
@@ -73,6 +75,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
 
       <div className="space-y-1">
         <input
+          aria-label="세션 검색"
           className="w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
           placeholder="검색 (예: channel:discord to:operator incident)"
           value={filter.query}
