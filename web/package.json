@@ -14,6 +14,7 @@
     "deploy:build": "./scripts/build-prod.sh",
     "deploy:start": "./scripts/start-prod.sh",
     "healthcheck": "./scripts/healthcheck.sh",
+    "queue:check": "node scripts/check-heartbeat-queue.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
