@@ -6,6 +6,7 @@ OpenClaw Monitor web app 검증 파이프라인:
 2. `npm run typecheck`
 3. `npm run test:ci`
 4. `npm run build`
+5. `npm run audit:prod`
 
 단일 커맨드:
 
