@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-import type { GatewayEvent, SessionHistoryPage, SessionStatus, SessionSummary } from "@/types";
+import type {
+  AgentRegistrySnapshot,
+  GatewayEvent,
+  SessionHistoryPage,
+  SessionStatus,
+  SessionSummary,
+} from "@/types";
 
 export const sessionLifecycleStatusSchema = z.enum(["active", "idle", "stale", "disconnected"]);
 
@@ -45,6 +51,30 @@ export const sessionHistoryPageSchema = z.object({
   nextBefore: z.string().nullable(),
 });
 
+export const agentLifecycleStatusSchema = z.enum([
+  "active",
+  "idle",
+  "stale",
+  "disconnected",
+  "idle(no-session)",
+]);
+
+export const agentSourceTagSchema = z.enum(["session", "registry", "hybrid"]);
+
+export const agentDescriptorSchema = z.object({
+  agentKey: z.string(),
+  displayName: z.string(),
+  state: agentLifecycleStatusSchema,
+  sourceTag: agentSourceTagSchema,
+  updatedAt: z.string().optional(),
+  channel: z.string().nullable().optional(),
+});
+
+export const agentRegistrySnapshotSchema = z.object({
+  generatedAt: z.string(),
+  agents: z.array(agentDescriptorSchema),
+});
+
 export const gatewayEventTypeSchema = z.enum([
   "session.created",
   "session.updated",
@@ -74,6 +104,10 @@ export function parseSessionHistoryPage(payload: unknown): SessionHistoryPage {
   return sessionHistoryPageSchema.parse(payload);
 }
 
+export function parseAgentRegistrySnapshot(payload: unknown): AgentRegistrySnapshot {
+  return agentRegistrySnapshotSchema.parse(payload);
+}
+
 export function parseGatewayEvent(payload: unknown): GatewayEvent {
   return gatewayEventSchema.parse(payload);
 }
@@ -90,6 +124,10 @@ export function safeParseSessionHistoryPage(payload: unknown) {
   return sessionHistoryPageSchema.safeParse(payload);
 }
 
+export function safeParseAgentRegistrySnapshot(payload: unknown) {
+  return agentRegistrySnapshotSchema.safeParse(payload);
+}
+
 export function safeParseGatewayEvent(payload: unknown) {
   return gatewayEventSchema.safeParse(payload);
 }
@@ -97,4 +135,6 @@ export function safeParseGatewayEvent(payload: unknown) {
 export type SessionSummaryInput = z.input<typeof sessionSummarySchema>;
 export type SessionStatusInput = z.input<typeof sessionStatusSchema>;
 export type HistoryItemInput = z.input<typeof historyItemSchema>;
+export type AgentDescriptorInput = z.input<typeof agentDescriptorSchema>;
+export type AgentRegistrySnapshotInput = z.input<typeof agentRegistrySnapshotSchema>;
 export type GatewayEventInput = z.input<typeof gatewayEventSchema>;
