@@ -91,4 +91,10 @@ describe("session selection flow", () => {
     expect(screen.getByText("Recent History")).toBeTruthy();
     expect(screen.getByText("Check latest heartbeat")).toBeTruthy();
   });
+
+  it("shows empty-state message when no sessions match", () => {
+    render(<SessionTable sessions={[]} />);
+
+    expect(screen.getByText("조건에 맞는 세션이 없습니다.")).toBeTruthy();
+  });
 });
