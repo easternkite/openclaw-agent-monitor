@@ -17,6 +17,18 @@
    - parse error count
    - reconcile drift 발생 여부
 
+## Heartbeat 종료 체크 (Queue 정합성)
+
+하트비트 사이클 종료 직전에 큐 문서 정합성을 확인한다.
+
+1. `npm run queue:check`
+2. 실패 시 `OPENCLAW_MONITOR_HEARTBEAT_QUEUE.md`에서 DONE 항목이 TODO/DOING에 중복 기재되었는지 정리
+3. 정리 후 다시 `npm run queue:check`를 실행해 통과 확인
+
+> 기본 검사 경로: `../../OPENCLAW_MONITOR_HEARTBEAT_QUEUE.md` (web 기준)
+> 
+> 다른 경로를 쓰려면 `HEARTBEAT_QUEUE_FILE` 환경 변수를 지정한다.
+
 ## Runtime Monitoring (권장)
 
 - WebSocket 상태가 `connected`로 유지되는지 확인
