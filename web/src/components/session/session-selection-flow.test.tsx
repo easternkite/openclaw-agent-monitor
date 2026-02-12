@@ -97,4 +97,19 @@ describe("session selection flow", () => {
 
     expect(screen.getByText("조건에 맞는 세션이 없습니다.")).toBeTruthy();
   });
+
+  it("toggles aria-pressed state on sort buttons", () => {
+    render(<SessionTable sessions={sessionRows} />);
+
+    const updatedSortButton = screen.getAllByRole("button", { name: "업데이트순" })[0];
+    const tokenSortButton = screen.getAllByRole("button", { name: "토큰순" })[0];
+
+    expect(updatedSortButton.getAttribute("aria-pressed")).toBe("true");
+    expect(tokenSortButton.getAttribute("aria-pressed")).toBe("false");
+
+    fireEvent.click(tokenSortButton);
+
+    expect(updatedSortButton.getAttribute("aria-pressed")).toBe("false");
+    expect(tokenSortButton.getAttribute("aria-pressed")).toBe("true");
+  });
 });
