@@ -57,6 +57,14 @@ const historyBySessionKey: Record<string, HistoryItem[]> = {
 
 describe("session selection flow", () => {
   beforeEach(() => {
+    if (!globalThis.ResizeObserver) {
+      globalThis.ResizeObserver = class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      } as typeof ResizeObserver;
+    }
+
     useUiStore.setState({
       selectedSessionKey: null,
       filter: { agent: null, channel: null, query: "" },

@@ -1,5 +1,6 @@
 "use client";
 
+import { SessionActionGraph } from "@/components/session/session-action-graph";
 import { useSessionDetail } from "@/hooks/use-session-detail";
 import { ApiRequestError } from "@/lib/api-error";
 import { useUiStore } from "@/stores/ui-store";
@@ -41,6 +42,11 @@ export function SessionDetailPanel() {
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="rounded-lg border border-border bg-background p-3">
+        <p className="mb-2 text-xs text-muted-foreground">Action Graph (Phase 2)</p>
+        <SessionActionGraph history={history} />
       </div>
     </div>
   );
