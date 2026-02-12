@@ -2,6 +2,8 @@
 
 운영 실행 기준:
 
+- 배포 전 체크리스트/장애 대응: `docs/runbook.md`
+
 ## 1) Build + Verify
 
 ```bash
