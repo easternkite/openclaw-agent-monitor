@@ -32,6 +32,7 @@ export function SessionTable({ sessions }: SessionTableProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            aria-pressed={sortKey === "updatedAt"}
             className={`rounded px-2 py-1 ${sortKey === "updatedAt" ? "bg-background" : "text-muted-foreground"}`}
             onClick={() => setSortKey("updatedAt")}
           >
@@ -39,6 +40,7 @@ export function SessionTable({ sessions }: SessionTableProps) {
           </button>
           <button
             type="button"
+            aria-pressed={sortKey === "tokens"}
             className={`rounded px-2 py-1 ${sortKey === "tokens" ? "bg-background" : "text-muted-foreground"}`}
             onClick={() => setSortKey("tokens")}
           >
