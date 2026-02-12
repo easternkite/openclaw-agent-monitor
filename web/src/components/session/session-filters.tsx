@@ -71,12 +71,15 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
         ))}
       </select>
 
-      <input
-        className="rounded-md border border-border bg-background px-2 py-1 text-sm"
-        placeholder="검색 (displayName, lastTo)"
-        value={filter.query}
-        onChange={(event) => setSearchQuery(event.target.value)}
-      />
+      <div className="space-y-1">
+        <input
+          className="w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
+          placeholder="검색 (예: channel:discord to:operator incident)"
+          value={filter.query}
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">지원: channel:&lt;채널&gt;, to:&lt;수신자&gt;, recipient:&lt;수신자&gt;</p>
+      </div>
     </div>
   );
 }
