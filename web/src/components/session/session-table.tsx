@@ -58,23 +58,31 @@ export function SessionTable({ sessions }: SessionTableProps) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((session) => {
-              const card = mapSessionToCard(session);
-              const selected = selectedSessionKey === session.key;
+            {sorted.length === 0 ? (
+              <tr className="border-t border-border/60">
+                <td colSpan={4} className="px-3 py-6 text-center text-sm text-muted-foreground">
+                  조건에 맞는 세션이 없습니다.
+                </td>
+              </tr>
+            ) : (
+              sorted.map((session) => {
+                const card = mapSessionToCard(session);
+                const selected = selectedSessionKey === session.key;
 
-              return (
-                <tr
-                  key={session.key}
-                  className={`cursor-pointer border-t border-border/60 ${selected ? "bg-status-active/10" : "hover:bg-surface-muted"}`}
-                  onClick={() => selectSession(session.key)}
-                >
-                  <td className="truncate px-3 py-2">{card.agentName}</td>
-                  <td className="truncate px-3 py-2">{card.title}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{card.updatedAgoLabel}</td>
-                  <td className="px-3 py-2 text-right">{card.totalTokensLabel}</td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr
+                    key={session.key}
+                    className={`cursor-pointer border-t border-border/60 ${selected ? "bg-status-active/10" : "hover:bg-surface-muted"}`}
+                    onClick={() => selectSession(session.key)}
+                  >
+                    <td className="truncate px-3 py-2">{card.agentName}</td>
+                    <td className="truncate px-3 py-2">{card.title}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{card.updatedAgoLabel}</td>
+                    <td className="px-3 py-2 text-right">{card.totalTokensLabel}</td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
