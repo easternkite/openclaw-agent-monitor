@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:ci": "vitest run --reporter=verbose",
-    "verify": "npm run lint && npm run typecheck && npm run test:ci && npm run build",
+    "verify": "npm run lint && npm run typecheck && npm run test:ci && npm run build && npm run audit:prod",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "deploy:build": "./scripts/build-prod.sh",
     "deploy:start": "./scripts/start-prod.sh",

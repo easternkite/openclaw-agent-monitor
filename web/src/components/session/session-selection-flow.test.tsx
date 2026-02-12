@@ -109,8 +109,15 @@ describe("session selection flow", () => {
   it("toggles aria-pressed state on sort buttons", () => {
     render(<SessionTable sessions={sessionRows} />);
 
-    const updatedSortButton = screen.getAllByRole("button", { name: "업데이트순" })[0];
-    const tokenSortButton = screen.getAllByRole("button", { name: "토큰순" })[0];
+    const [updatedSortButton] = screen.getAllByRole("button", { name: "업데이트순" });
+    const [tokenSortButton] = screen.getAllByRole("button", { name: "토큰순" });
+
+    expect(updatedSortButton).toBeDefined();
+    expect(tokenSortButton).toBeDefined();
+
+    if (!updatedSortButton || !tokenSortButton) {
+      throw new Error("sort buttons are missing");
+    }
 
     expect(updatedSortButton.getAttribute("aria-pressed")).toBe("true");
     expect(tokenSortButton.getAttribute("aria-pressed")).toBe("false");
