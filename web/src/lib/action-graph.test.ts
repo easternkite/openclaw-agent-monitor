@@ -18,4 +18,11 @@ describe("buildActionGraphFromHistory", () => {
     expect(graph.edges[0]).toMatchObject({ source: "h1", target: "h2" });
     expect(graph.edges[1]).toMatchObject({ source: "h2", target: "h3" });
   });
+
+  it("returns empty graph for empty history", () => {
+    const graph = buildActionGraphFromHistory([]);
+
+    expect(graph.nodes).toHaveLength(0);
+    expect(graph.edges).toHaveLength(0);
+  });
 });
