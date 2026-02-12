@@ -76,6 +76,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
       <div className="space-y-1">
         <input
           aria-label="세션 검색"
+          autoComplete="off"
           className="w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
           placeholder="검색 (예: channel:discord to:operator incident)"
           value={filter.query}
