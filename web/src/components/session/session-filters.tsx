@@ -77,6 +77,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
         <input
           aria-label="세션 검색"
           autoComplete="off"
+          spellCheck={false}
           title="지원 검색: channel:<채널>, to:<수신자>, recipient:<수신자>"
           className="w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
           placeholder="검색 (예: channel:discord to:operator incident)"
