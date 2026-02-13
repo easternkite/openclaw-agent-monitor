@@ -75,6 +75,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
 
       <div className="space-y-1">
         <input
+          aria-describedby="session-search-help"
           aria-label="세션 검색"
           autoComplete="off"
           autoCapitalize="none"
@@ -86,7 +87,7 @@ export function SessionFilters({ agentOptions, channelOptions }: SessionFiltersP
           value={filter.query}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p id="session-search-help" className="text-xs text-muted-foreground">
           지원: channel:&lt;채널&gt;, to:&lt;수신자&gt;, recipient:&lt;수신자&gt; (예: channel:discord to:operator incident)
         </p>
       </div>
